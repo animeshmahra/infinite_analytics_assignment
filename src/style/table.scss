@@ -1,0 +1,49 @@
+:root {
+    --border-color:  #4d4d4d;
+}
+
+.custom-table {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 10px;
+    border: 1px solid var(--border-color);
+    border-bottom: none;
+    border-radius: 3px
+}
+
+.custom-table-header {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.custom-table-row {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    border-bottom: 1px solid var(--border-color)
+}
+
+.custom-table-header div {
+    text-align: center;
+    font-weight: bold;
+    padding: 4px;
+    flex: 0 0 auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.custom-table-row div {
+    padding: 4px;
+    align-items: center;
+    flex: 0 0 auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 32px;
+    text-align: center;
+}
+
