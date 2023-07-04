@@ -34,7 +34,7 @@ const Table = ({ props }) => {
 
 
     return (
-        <Box style={{ width: 'fit-content', maxWidth: '100%' }}>
+        <Box>
             <div className="custom-table">
                 <div className="custom-table-header" >
                     {props.columns.map((column, index) =>
@@ -51,6 +51,10 @@ const Table = ({ props }) => {
                                         {props.columns.map((column, ind) =>
                                             <div key={ind} style={{ width: `${column['width']}px` }}>
                                                 {column['field'] === 'action' && <Button onClick={() => viewNavigate(item['invoiceNumber'])} variant="contained"> View </Button>}
+                                                {
+                                                    column['field'] === 'action' && item['status'] === 'late' &&
+                                                    <Button onClick={() => viewNavigate(item['invoiceNumber'])} variant="outlined" sx={{color:'red', borderColor: 'red', marginLeft: '20px'}}> alert </Button>
+                                                }
                                                 {column['field'] === 'amount' && <div> {item['rate'] * item['quantity']}</div>}
                                                 {column['field'] === 'status' && <div className="text-capitalize" style={item[column['field']] === 'late' ? specialStyle : normalStyle}> {item[column['field']]}  </div>}
                                                 {column['field'] !== 'amount' && column['field'] !== 'status' && column['field'] !== 'action' && <div>  {item[column['field']] ? item[column['field']] : '-'}  </div>}

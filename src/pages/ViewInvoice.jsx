@@ -6,9 +6,11 @@ import { useSelector } from 'react-redux'
 import { invoices } from "../store/invoiceSlice";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import { Padding } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+
 
 export default function ViewInvoice() {
+    const navigate = useNavigate();
     const pdfRef = useRef()
     const { id } = useParams();
     const [invoice, setInvoice] = useState([])
@@ -22,10 +24,7 @@ export default function ViewInvoice() {
                 const imgData = canvas.toDataURL('image/png');
                 const pdfWidth = pdf.internal.pageSize.getWidth();
                 const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
                 pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-
-                console.log(pdf)
                 pdf.save(`invoice_${invoice.invoiceNumber}.pdf`);
             });
     }
@@ -34,12 +33,13 @@ export default function ViewInvoice() {
 
     useEffect(() => {
         const invoiceById = invoiceList.find((val) => val.invoiceNumber == id)
-        console.log(invoiceById, invoiceList)
         setInvoice(invoiceById)
         setList(invoiceById.items)
     }, [])
 
-
+    const handleBack = () => {
+        navigate('/')
+    }
 
     const columns = [
         { field: 'itemName', headerName: 'Name', width: 200 },
@@ -51,7 +51,7 @@ export default function ViewInvoice() {
     return (
         <>
             <Box className="d-flex ">
-                <a href="mailto:email@example.com">Send Email</a>
+                <Button sx={{ color: 'red', borderColor: 'red' }} onClick={handleBack} variant="outlined"> back</Button>
                 <Button sx={{ marginLeft: 'auto' }} onClick={handleDownload} variant="outlined"> Download</Button>
             </Box>
             {invoice.name &&

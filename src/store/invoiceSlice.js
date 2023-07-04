@@ -6,7 +6,7 @@ export const invoiceSlice = createSlice({
     value: [{
       invoiceNumber: '123421',
       name: 'Invoice 1',
-      status: 'pending',
+      status: 'outstanding',
       dueDate: '2023-07-10',
       email: "invoice1@gmail.com",
       address: "1234 NW Bobcat Lane, St. Robert, MO 65584-5678",
@@ -30,7 +30,7 @@ export const invoiceSlice = createSlice({
       name: 'Invoice 2',
       status: 'late',
       dueDate: '2023-06-30',
-      email: "invoice2@gmail.com",
+      email: "animesh@va2pt.com",
       address: "123 NW Bobcat Lane, St. Robert, MO 65584-5678",
       date: '2023-06-30',
       items: [
@@ -41,7 +41,29 @@ export const invoiceSlice = createSlice({
         }
       ],
       note: 'Another example invoice.'
-    }],
+    },
+    {
+      invoiceNumber: '123422',
+      name: 'Invoice 1',
+      status: 'paid',
+      dueDate: '2023-07-10',
+      email: "invoice3@gmail.com",
+      address: "1234 NW Bobcat Lane, St. Robert, MO 65584-5678",
+      date: '2023-06-30',
+      items: [
+        {
+          itemName: 'Item 1',
+          rate: 10,
+          quantity: 2
+        },
+        {
+          itemName: 'Item 2',
+          rate: 15,
+          quantity: 1
+        }
+      ],
+      note: 'This is an example invoice.'
+    },],
   },
 
   reducers: {

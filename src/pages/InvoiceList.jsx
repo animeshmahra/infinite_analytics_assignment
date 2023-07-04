@@ -1,17 +1,27 @@
 import { Box, Button, Modal, Typography, TextField, Card, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import Table from "../components/table";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CloseIcon from '@mui/icons-material/Close';
 import { useSelector, useDispatch } from 'react-redux'
 import { invoices, updateList } from "../store/invoiceSlice";
+import { sendEmail } from "../Common";
 export default function InvoiceList() {
 
+    useEffect(() => {
+        const defaulter = list.filter((val) => { return val.status === 'late' })
+        setDefaulterList(defaulter)
+        if (defaulter.length > 0) {
+            setOpenDefaulter(true)
+        }
+    }, [])
 
+    const [defaulterList, setDefaulterList] = useState([])
     const dispatch = useDispatch()
     const today = new Date();
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, '0');
     const day = String(today.getDate()).padStart(2, '0');
+
 
     const style = {
         position: 'absolute',
@@ -40,15 +50,16 @@ export default function InvoiceList() {
 
     const columns = [
         { field: 'invoiceNumber', headerName: 'Invoice No.', width: 200 },
-        { field: 'name', headerName: 'Name', width: 200 },
-        { field: 'status', headerName: 'Status', width: 200 },
-        { field: 'dueDate', headerName: 'Due Date', width: 200 },
         { field: 'email', headerName: 'Email', width: 200 },
+        { field: 'name', headerName: 'Name', width: 200 },
+        { field: 'dueDate', headerName: 'Due Date', width: 200 },
+        { field: 'status', headerName: 'Status', width: 200 },
         { field: 'action', headerName: 'Action', width: 200 }
     ];
 
     const list = useSelector(invoices)
     const [open, setOpen] = useState(false)
+    const [openDefaulter, setOpenDefaulter] = useState(false)
     const [invoiceData, setInvoiceData] = useState({
         name: '',
         status: '',
@@ -137,6 +148,22 @@ export default function InvoiceList() {
         }
     };
 
+    const handleCloseModal = () => {
+        setOpenDefaulter(false)
+    }
+
+    const sendAlert = (item) => {
+        sendEmail(item)
+    }
+
+    const removeItem = (index) => {
+        if (invoiceData.items.length > 1) {
+            setInvoiceData((prevData) => ({
+                ...prevData,
+                items: prevData.items.slice(0, index).concat(prevData.items.slice(index + 1)),
+            }));
+        }
+    }
 
     return (
         <>
@@ -148,7 +175,7 @@ export default function InvoiceList() {
             >
                 <Box sx={style}>
                     <Typography id="modal-modal-title" variant="h6"> Create New Invoice <CloseIcon style={{ float: 'right' }} onClick={handleClose} /></Typography>
-                    <Box className="d-flex flex-column p-2" sx={{maxHeight: '50vh'}}>
+                    <Box className="d-flex flex-column p-2">
                         <Box className="d-flex justify-content-between mt-2">
                             <TextField label="Name" size="small" variant="outlined" name="name" value={invoiceData.name} onChange={handleChange} sx={{ width: '40%' }} />
                             <input type='date' style={date_input_style} name='dueDate' value={invoiceData.due_date} onChange={handleChange} />
@@ -179,10 +206,11 @@ export default function InvoiceList() {
                         {<Card className="d-flex flex-column p-2 mt-2">
                             Items:
                             {invoiceData.items.map((item, index) =>
-                                <Box key={index} className="d-flex justify-content-between mt-2">
+                                <Box key={index} className="d-flex justify-content-between align-items-center mt-2">
                                     <TextField label="Name" size="small" variant="outlined" name="itemName" value={item.itemName} onChange={(event) => handleItemChange(index, event)} sx={{ width: '30%' }} />
-                                    <TextField type="number" inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} label="Rate" size="small" variant="outlined" name="rate" value={item.rate} onChange={(event) => handleItemChange(index, event)} sx={{ width: '30%' }} />
-                                    <TextField type="number" inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} label="Quantity" size="small" variant="outlined" name="quantity" value={item.quantity} onChange={(event) => handleItemChange(index, event)} sx={{ width: '30%' }} />
+                                    <TextField type="number" inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} label="Rate" size="small" variant="outlined" name="rate" value={item.rate} onChange={(event) => handleItemChange(index, event)} sx={{ width: '20%' }} />
+                                    <TextField type="number" inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }} label="Quantity" size="small" variant="outlined" name="quantity" value={item.quantity} onChange={(event) => handleItemChange(index, event)} sx={{ width: '20%' }} />
+                                    <Button sx={{ color: 'red', borderColor: 'red' }} variant="outlined" size="small" onClick={() => removeItem(index)}>X</Button>
                                 </Box>
                             )}
 
@@ -197,6 +225,21 @@ export default function InvoiceList() {
 
 
                     <Button variant="contained" sx={{ marginTop: 'auto', marginLeft: 'auto' }} onClick={handleCreate}>Create</Button>
+                </Box>
+            </Modal>
+
+            <Modal open={openDefaulter}>
+                <Box sx={style}>
+                    <Typography id="modal-modal-title" variant="h6"> Defaulters <CloseIcon style={{ float: 'right' }} onClick={handleCloseModal} /></Typography>
+                    {
+                        defaulterList.map((item, index) =>
+                            <Card className="p-2 d-flex align-items-center justify-content-between" key={index}>
+                                <Typography >{item.invoiceNumber}</Typography>
+                                <Typography >{item.name}</Typography>
+                                <Button variant="outlined" size="small" onClick={() => sendAlert(item)} >Alert</Button>
+                            </Card>
+                        )
+                    }
                 </Box>
             </Modal>
         </>
